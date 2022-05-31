@@ -2,7 +2,7 @@ import "./style/style.css";
 
 const playNow = document.getElementById('play-now');
 const next = document.getElementById('next');
-const questionContainer = document.getElementById('questionContainer');
+const main = document.getElementById('main');
 let questionCount = 0;
 let score = 0;
 
@@ -18,6 +18,9 @@ const generateQuestion = () => {
         /* const question = document.createElement('p');
         question.innerText = `${data[questionCount].question}`;
         questionContainer.append(question); */
+        const questionContainer = document.createElement('div');
+        questionContainer.setAttribute('id', 'questionContainer');
+        main.append(questionContainer);
         playNow.remove();
         questions(data);
         answers(data,data);
@@ -37,6 +40,7 @@ const generateQuestion = () => {
 //Mungkin bisa dibikin file baru khusus buat fungsi question
 const questions = (questionPar) => {
     const question = document.createElement('p');
+    const questionContainer = document.getElementById('questionContainer');
     question.innerText = `${questionPar[questionCount].question}`;
     questionContainer.append(question);
 };
@@ -81,7 +85,7 @@ const answers = (answer,question) => {
      optionD.innerText = `D. ${answer[questionCount].correctAnswer}(correct answer)`;
      optionD.setAttribute('id', "correct-answer");
     }
-    
+    const questionContainer = document.getElementById('questionContainer');
     questionContainer.append(optionA);
     questionContainer.append(optionB);
     questionContainer.append(optionC);
@@ -101,6 +105,7 @@ const answers = (answer,question) => {
 };
 
 const nextQuestion = (data) => {
+    const questionContainer = document.getElementById('questionContainer');
     if(questionCount < 9){
     questionCount++;
     questionContainer.innerHTML = '';
@@ -119,6 +124,7 @@ const nextQuestion = (data) => {
         questionContainer.append(playAgain);
         playAgain.addEventListener('click', () => {
             questionContainer.innerHTML = '';
+            questionContainer.remove();
             generateQuestion();
         })
     }
@@ -136,4 +142,14 @@ playNow.addEventListener('click', () => {
     questions(data);
     answers(data);
 }); */
+
+
+//Drawer Script
+const hamburgerButtonElement = document.querySelector("#menu");
+const drawerElement = document.querySelector("#drawer");
+
+hamburgerButtonElement.addEventListener("click", event => {
+    drawerElement.classList.toggle("open");
+    event.stopPropagation();
+   });
 
