@@ -1,5 +1,6 @@
 import "./style/style.css";
 
+//var a;
 const playNow = document.getElementById('play-now');
 const next = document.getElementById('next');
 const main = document.getElementById('main');
