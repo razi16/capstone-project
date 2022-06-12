@@ -1,11 +1,42 @@
 import "./style/style.css";
 
-//var a;
 const playNow = document.getElementById('play-now');
-const next = document.getElementById('next');
 const main = document.getElementById('main');
+const scores = [];
 let questionCount = 0;
 let score = 0;
+const SAVED_EVENT = 'saved-scores';
+const STORAGE_KEY = 'QUIZ_APPS';
+
+const isStorageExist = () => {
+    if (typeof (Storage) === undefined) {
+      alert('Browser kamu tidak mendukung local storage');
+      return false;
+    }
+    return true;
+  }
+
+const saveData = () => {
+    if (isStorageExist()) {
+      const parsed = JSON.stringify(scores);
+      localStorage.setItem(STORAGE_KEY, parsed);
+      document.dispatchEvent(new Event(SAVED_EVENT));
+    }
+  }
+
+const loadDataFromStorage = () => {
+    const serializedData = localStorage.getItem(STORAGE_KEY);
+    let data = JSON.parse(serializedData);
+   
+    if (data !== null) {
+      for (const score of data) {
+        scores.push(score);
+      }
+    }
+   
+
+  }
+
 
 const generateQuestion = () => {
     fetch('https://the-trivia-api.com/api/questions?limit=10')
@@ -14,25 +45,12 @@ const generateQuestion = () => {
 })
 .then(data => {
     console.log(data);
-    
-    /* const questions = () => { */
-        /* const question = document.createElement('p');
-        question.innerText = `${data[questionCount].question}`;
-        questionContainer.append(question); */
         const questionContainer = document.createElement('div');
         questionContainer.setAttribute('id', 'questionContainer');
         main.append(questionContainer);
         playNow.remove();
         questions(data);
         answers(data,data);
-        /* next.addEventListener('click', () =>{ */
-            /* questionCount++;
-            questions(data);
-            answers(data); */
-            /* nextQuestion(data); */
-        /* }); */
-        /* questionCount++; */
-   /*  }; */
     }
   );
 };
@@ -118,8 +136,17 @@ const nextQuestion = (data) => {
         questionContainer.innerHTML = '';
         questionContainer.innerHTML = `<p>Your final score is ${score}</p>`;
         console.log(score);
+        if(scores.length < 5){
+            scores.push(score);
+        }
+        else{
+            scores.splice(0,1);
+            scores.push(score);
+        }
+        saveData();
         score = 0;
         questionCount = 0;
+        console.log(scores);
         const playAgain = document.createElement('p');
         playAgain.innerText = 'Play again';
         questionContainer.append(playAgain);
@@ -134,16 +161,26 @@ const nextQuestion = (data) => {
 };
 
 
-playNow.addEventListener('click', () => {
-    generateQuestion();
-});
 
-/* next.addEventListener('click', () =>{
-    questionCount++;
-    questions(data);
-    answers(data);
-}); */
 
+
+document.addEventListener(SAVED_EVENT, function () {
+    console.log(localStorage.getItem(STORAGE_KEY));
+  });
+  
+document.addEventListener('DOMContentLoaded', function () {
+   if (isStorageExist()) {
+     loadDataFromStorage();
+   }
+   if(main.firstElementChild.id == 'scoreContainer'){
+     const scoreContainer = document.getElementById('scoreContainer');
+     for (const score of scores) {
+       const scoreElement = document.createElement('p');
+       scoreElement.innerText = score;
+       scoreContainer.append(scoreElement);
+     };
+   };
+ });
 
 //Drawer Script
 const hamburgerButtonElement = document.querySelector("#menu");
@@ -153,4 +190,7 @@ hamburgerButtonElement.addEventListener("click", event => {
     drawerElement.classList.toggle("open");
     event.stopPropagation();
    });
-
+   
+playNow.addEventListener('click', () => {
+    generateQuestion();
+});
