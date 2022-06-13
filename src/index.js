@@ -1,4 +1,8 @@
 import "./style/style.css";
+import "./images/image1.jpg";
+import "./images/image2.jpg";
+import "./images/image3.jpg";
+import "./images/image4.jpg";
 
 const playNow = document.getElementById('play-now');
 const main = document.getElementById('main');
