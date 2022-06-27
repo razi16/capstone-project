@@ -2,12 +2,38 @@
 /* eslint-disable valid-typeof */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-use-before-define */
-/* import { isStorageExist, generateQuestion, questions, answers }
- from '../../functions/function'; */
+ 
+let apiUrl = 'https://the-trivia-api.com/api/questions?limit=10';
 let questionCount = 0;
 let score = 0;
 let scores = [];
 const STORAGE_KEY = 'QUIZ_APPS';
+const playNowPageTemplate = `
+<label for="difficulty" id="difficulty-label" tabindex = "0">Difficulty:</label>
+<select name="difficulty" id="difficulty">
+<option value="mixed">Mixed</option>
+<option value="easy">Easy</option>
+<option value="medium">Medium</option>
+<option value="hard">Hard</option>
+</select>
+
+<label for="categories" id="categories-label" tabindex = "0">Categories:</label>
+<select name="categories" id="categories">
+<option value="mixed">Mixed</option>
+<option value="arts_and_literature">Arts and Literature</option>
+<option value="film_and_tv">Film and TV</option>
+<option value="food_and_drink">Food and Drink</option>
+<option value="general_knowledge">General Knowledge</option>
+<option value="geography">Geography</option>
+<option value="history">History</option>
+<option value="music">Music</option>
+<option value="science">Science</option>
+<option value="society_and_culture">Society and Culture</option>
+<option value="sport_and_leisure">Sport and Leisure</option>
+</select>
+
+  <button id="play-now" tabindex="0">Play now</button>
+  `;
 
 const isStorageExist = () => {
   if (typeof (Storage) === undefined) {
@@ -74,7 +100,7 @@ const answers = (answer, question) => {
     optionD.innerText = `D. ${answer[questionCount].correctAnswer}(correct answer)`;
     optionD.setAttribute('id', 'correct-answer');
   }
-  const questionContainer = document.getElementById('questionContainer');
+  const questionContainer = document.getElementById('question-container');
   questionContainer.append(optionA);
   questionContainer.append(optionB);
   questionContainer.append(optionC);
@@ -99,22 +125,27 @@ const answers = (answer, question) => {
   }
 };
 
-const questions = (questionPar) => {
+const questions = (questionParameter) => {
   const question = document.createElement('p');
-  const questionContainer = document.getElementById('questionContainer');
-  question.innerText = `${questionPar[questionCount].question}`;
+  const questionContainer = document.getElementById('question-container');
+  question.innerText = `${questionParameter[questionCount].question}`;
+  question.setAttribute('tabindex', '0');
   questionContainer.append(question);
 };
 
 const generateQuestion = () => {
-  fetch('https://the-trivia-api.com/api/questions?limit=10')
+  fetch(apiUrl)
     .then((res) => res.json())
     .then((data) => {
       console.log(data);
       const questionContainer = document.createElement('div');
-      questionContainer.setAttribute('id', 'questionContainer');
+      questionContainer.setAttribute('id', 'question-container');
       document.getElementById('main').append(questionContainer);
-      if (document.getElementById('main').firstElementChild.id === 'play-now') {
+      if (document.getElementById('main').firstElementChild.id === 'difficulty-label') {
+        document.getElementById('difficulty-label').remove();
+        document.getElementById('difficulty').remove();
+        document.getElementById('categories-label').remove();
+        document.getElementById('categories').remove();
         document.getElementById('play-now').remove();
       }
 
@@ -130,58 +161,80 @@ const generateQuestion = () => {
     });
 };
 
+const quizPreparation = () => {
+  isStorageExist();
+  scores = [];
+  loadDataFromStorage();
+  const playNow = document.getElementById('play-now');
+  playNow.addEventListener('click', () => {
+    apiUrl = 'https://the-trivia-api.com/api/questions?limit=10';
+    const difficulty = document.getElementById('difficulty');
+    const categories = document.getElementById('categories');
+    const difficultyValue = difficulty.options[difficulty.selectedIndex].value;
+    const categoriesValue = categories.options[categories.selectedIndex].value;
+    if(categoriesValue !== 'mixed'){
+      apiUrl = `${apiUrl}&categories=${categoriesValue}`;
+    }
+    if(difficultyValue !== 'mixed'){
+      apiUrl = `${apiUrl}&difficulty=${difficultyValue}`;
+    }
+    generateQuestion();
+  });
+};
+
 const nextQuestion = (data) => {
-  const questionContainer = document.getElementById('questionContainer');
+  const questionContainer = document.getElementById('question-container');
   if (questionCount < 9) {
     questionCount += 1;
     questionContainer.innerHTML = '';
     questions(data);
     answers(data, data);
   } else {
-    console.log('no more question');
     questionContainer.innerHTML = '';
-    questionContainer.innerHTML = `<p>Your final score is ${score}</p>`;
+    questionContainer.innerHTML = `<p tabindex="0">Your final score is</p>
+                                   <p id="score" tabindex="0">${score}</p>`;
     console.log(score);
+    let today = new Date();
+    let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    let time = today.getHours() + ":" + today.getMinutes();
+    let currentTime = `${date}, ${time}`;
     if (scores.length < 5) {
-      scores.push(score);
+      scores.push({'score': score, 'time': currentTime})
     } else {
       scores.splice(0, 1);
-      scores.push(score);
+      scores.push({'score': score, 'time': currentTime})
     }
     saveData();
     score = 0;
     questionCount = 0;
     console.log(scores);
-    const playAgain = document.createElement('p');
+    const playAgain = document.createElement('button');
     playAgain.innerText = 'Play again';
+    playAgain.setAttribute('id', 'play-again');
+    playAgain.setAttribute('tabindex', '0');
+    playAgain.setAttribute('style', 'cursor: pointer;');
     questionContainer.append(playAgain);
+    playAgain.addEventListener('keypress', (ev) => {
+      if(ev.key === 'Enter' || ev.key === 'Spacebar') {
+        ev.preventDefault();
+        playAgain.click();
+      }
+    });
     playAgain.addEventListener('click', () => {
-      questionContainer.innerHTML = '';
-      questionContainer.remove();
-      generateQuestion();
+      document.getElementById('main').innerHTML = '';
+      document.getElementById('main').innerHTML = playNowPageTemplate;
+      quizPreparation();
     });
   }
 };
 
 const PlayNow = {
   async render() {
-    return `
-    <button id="play-now" tabindex="0">Play now</button>
-    `;
+    return playNowPageTemplate;
   },
 
   async afterRender() {
-    /* const hello = 'hellow'; */
-    /* let questionCount = 0; */
-    /* let score = 0; */
-    isStorageExist();
-    scores = [];
-    loadDataFromStorage();
-    const playNow = document.getElementById('play-now');
-    playNow.addEventListener('click', () => {
-      /* alert(hello); */
-      generateQuestion();
-    });
+    quizPreparation();
   },
 };
 
