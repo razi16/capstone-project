@@ -100,11 +100,11 @@ const answers = (answer, question) => {
     optionD.innerText = `D. ${answer[questionCount].correctAnswer}(correct answer)`;
     optionD.setAttribute('id', 'correct-answer');
   }
-  const questionContainer = document.getElementById('question-container');
-  questionContainer.append(optionA);
-  questionContainer.append(optionB);
-  questionContainer.append(optionC);
-  questionContainer.append(optionD);
+  const quizContainer = document.getElementById('quiz-container');
+  quizContainer.append(optionA);
+  quizContainer.append(optionB);
+  quizContainer.append(optionC);
+  quizContainer.append(optionD);
 
   const correctOption = document.getElementById('correct-answer');
   correctOption.addEventListener('click', () => {
@@ -127,10 +127,10 @@ const answers = (answer, question) => {
 
 const questions = (questionParameter) => {
   const question = document.createElement('p');
-  const questionContainer = document.getElementById('question-container');
+  const quizContainer = document.getElementById('quiz-container');
   question.innerText = `${questionParameter[questionCount].question}`;
   question.setAttribute('tabindex', '0');
-  questionContainer.append(question);
+  quizContainer.append(question);
 };
 
 const generateQuestion = () => {
@@ -138,9 +138,9 @@ const generateQuestion = () => {
     .then((res) => res.json())
     .then((data) => {
       console.log(data);
-      const questionContainer = document.createElement('div');
-      questionContainer.setAttribute('id', 'question-container');
-      document.getElementById('main').append(questionContainer);
+      const quizContainer = document.createElement('section');
+      quizContainer.setAttribute('id', 'quiz-container');
+      document.getElementById('main').append(quizContainer);
       if (document.getElementById('main').firstElementChild.id === 'difficulty-label') {
         document.getElementById('difficulty-label').remove();
         document.getElementById('difficulty').remove();
@@ -183,15 +183,15 @@ const quizPreparation = () => {
 };
 
 const nextQuestion = (data) => {
-  const questionContainer = document.getElementById('question-container');
+  const quizContainer = document.getElementById('quiz-container');
   if (questionCount < 9) {
     questionCount += 1;
-    questionContainer.innerHTML = '';
+    quizContainer.innerHTML = '';
     questions(data);
     answers(data, data);
   } else {
-    questionContainer.innerHTML = '';
-    questionContainer.innerHTML = `<p tabindex="0">Your final score is</p>
+    quizContainer.innerHTML = '';
+    quizContainer.innerHTML = `<p tabindex="0">Your final score is</p>
                                    <p id="score" tabindex="0">${score}</p>`;
     console.log(score);
     let today = new Date();
@@ -213,7 +213,7 @@ const nextQuestion = (data) => {
     playAgain.setAttribute('id', 'play-again');
     playAgain.setAttribute('tabindex', '0');
     playAgain.setAttribute('style', 'cursor: pointer;');
-    questionContainer.append(playAgain);
+    quizContainer.append(playAgain);
     playAgain.addEventListener('keypress', (ev) => {
       if(ev.key === 'Enter' || ev.key === 'Spacebar') {
         ev.preventDefault();
