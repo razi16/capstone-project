@@ -231,7 +231,7 @@ option{
     padding-bottom: 7px;
 }
 
-#question-container{
+#quiz-container{
     margin-left: 15%;
     margin-right: 15%;
     margin-top: 50px; 
@@ -362,7 +362,7 @@ img{
 }
 
 @media screen and (max-width: 570px) {
-    #question-container{
+    #quiz-container{
         margin-left: 1%;
         margin-right: 1%;
         margin-top: 30px;
@@ -372,7 +372,7 @@ img{
 }
 
 @media screen and (min-width:571px) and (max-width: 1000px) {
-    #question-container{
+    #quiz-container{
         margin-left: 1%;
         margin-right: 1%;
         margin-top: 100px;
