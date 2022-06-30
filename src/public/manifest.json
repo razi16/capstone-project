@@ -4,8 +4,8 @@
     "description": "Random trivia quiz to get rid of your boredom",
     "start_url": "/index.html",
     "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#ffffff",
+    "background_color": "#8ecae6",
+    "theme_color": "#fb8500",
     "icons": [
       {
         "src": "/icons/icon-72x72.png",
