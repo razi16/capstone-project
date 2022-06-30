@@ -333,6 +333,27 @@ img{
     }
 }
 
+@media screen and (max-width: 535px) {
+    #score-container{
+        margin-left: 10%;
+        margin-right: 10%;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    #main{
+        padding-bottom: 15%;
+    }
+}
+
+@media screen and (max-width: 330px) {
+    #score-container{
+        margin-left: 3%;
+        margin-right: 3%;
+    }
+}
+
+
 @media screen and (max-width: 530px) {
     .teamMember{
         margin-left: 15%;
