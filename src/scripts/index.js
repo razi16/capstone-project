@@ -9,8 +9,6 @@ const app = new App({
   content: document.querySelector('#main'),
 });
 
-const hello = 'Hello world';
-
 window.addEventListener('hashchange', () => {
   app.renderPage();
 });
